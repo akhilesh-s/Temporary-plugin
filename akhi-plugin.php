@@ -22,6 +22,25 @@ if ( !class_exists( 'AkhiPlugin' ) ) {
 		function __construct() {
 			$this->plugin = plugin_basename( __FILE__ );
 		}
+        function register() {
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+
+			add_action( 'admin_menu', array( $this, 'add_customer_page' ) );
+
+			add_filter( "plugin_action_links_$this->plugin", array( $this, 'settings_link' ) );
+		}
+        public function settings_link( $links ) {
+			$settings_link = '<a href="customer.php?page=akhi_plugin">Settings</a>';
+			array_push( $links, $settings_link );
+			return $links;
+		}
+        public function add_customer_page() {
+			add_menu_page( 'Akhi Plugin', 'Send data', 'manage_options', 'akhi_plugin', array( $this, 'customer_index' ), 'dashicons-store', 110 );
+		}
+
+        public function customer_index() {
+			require_once plugin_dir_path( __FILE__ ) . 'templates/customer.php';
+		}
 
         function activate() {
             // generated a CPT
@@ -34,84 +53,25 @@ if ( !class_exists( 'AkhiPlugin' ) ) {
             flush_rewrite_rules();
         }
 
-	
+      
 		function enqueue() {
 			// enqueue all our scripts
 			wp_enqueue_style( 'mypluginstyle', plugins_url( '/assests/mystyles.css', __FILE__ ) );
 			wp_enqueue_script( 'mypluginscript', plugins_url( '/assests/myscript.js', __FILE__ ) );
 		}
 
-        //http request
-        function requests()
-        {
-            // Customer Post request 
-            $body = [
-                    "data_type:"=> "customer",
-                    "customer"=> [
-                        "id"=> 123,
-                        "first_name"=> "John",
-                        "last_name"=> "Doe",
-                        "email"=> "john@johndoe.com",
-                        "address"=> "18/XII, Light Avenue, Upper Manhattan, NY"
-                    ]
-                ];
-                
-            $request = wp_remote_post('https://en0ctqi09fhu7m.x.pipedream.net/', array(
-                'headers' => array('Accept' => 'application/json'),
-                'body' =>  json_encode($body) 
-            ));
-
-            //Order post request
-            $body = [
-                "data_type:"=> "order",
-                "order"=> [
-                    "id"=> 123112,
-                    "customer_id"=> 123,
-                    "billing_address"=> [
-                        "first_name"=> "John",
-                        "last_name"=> "Doe",
-                        "email"=> "john@johndoe.com",
-                        "address"=> "18/XII, Light Avenue, Upper Manhattan, NY"
-                    ],
-                    "shipping_address"=> [
-                        "first_name"=> "John",
-                        "last_name"=> "Doe",
-                        "email"=> "john@johndoe.com",
-                        "address"=> "18/XII, Light Avenue, Upper Manhattan, NY"
-            ],
-                    "items"=> [
-                        [
-                            "id"=> 12,
-                            "quantity"=> 3,
-                            "rate"=> 15,
-                            "sub_total"=> 45,
-                            "currency"=> "USD"
-                    ]
-                    ],
-                    "total_amount"=> 45,
-                    "currency"=> "USD",
-                    "status"=> "confirmed"
-            ]
-                ];
-        
-            
-        $request = wp_remote_post('https://enss4q1617pem.x.pipedream.net/', array(
-            'headers' => array('Accept' => 'application/json'),
-            'body' =>  json_encode($body) 
-        ));
-           // echo $request;
-        }
 		
 	}
 
 	$akhiPlugin = new AkhiPlugin();
-    $akhiPlugin->requests();
+    $akhiPlugin->register();
+    
 	// activation
 	register_activation_hook( __FILE__, array( $akhiPlugin, 'activate' ) );
 
 	// deactivation
-
     register_deactivation_hook( __FILE__, array( $akhiPlugin, 'deactivate' ) );
 
 
 }
+?>
