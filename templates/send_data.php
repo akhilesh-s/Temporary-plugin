@@ -23,11 +23,10 @@ send_order($order);
 
 function send_order($order){
 
-    $body=[$order];
     
     $request = wp_remote_post('https://endva1ifnyt7l.x.pipedream.net/', array(
         'headers' => array('Accept' => 'application/json'),
-        'body' =>  json_encode($body) 
+        'body' =>  json_encode($order) 
     ));
 
 
@@ -42,11 +41,10 @@ send_customer($customer);
 
 function send_customer($customer)
 {
-    $body=[$customer];
-    
+  
     $request = wp_remote_post('https://endva1ifnyt7l.x.pipedream.net/', array(
         'headers' => array('Accept' => 'application/json'),
-        'body' =>  json_encode($body) 
+        'body' =>  json_encode($customer) 
     ));
 
     
