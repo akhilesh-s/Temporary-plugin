@@ -15,13 +15,11 @@ $woocommerce = new Client(
     ]
 );
 
+//Get List of Order
 $order=$woocommerce->get('orders');
-$customer=$woocommerce->get('customers');
-var_dump($order);
 
-
+//send list of orders
 send_order($order);
-send_customer($customer);
 
 function send_order($order){
 
@@ -35,6 +33,13 @@ function send_order($order){
 
 }
 
+
+//Get List of Customer
+$customer=$woocommerce->get('customers');
+
+//send list of customers
+send_customer($customer);
+
 function send_customer($customer)
 {
     $body=[$customer];
@@ -46,3 +51,4 @@ function send_customer($customer)
 
     
 }
+
